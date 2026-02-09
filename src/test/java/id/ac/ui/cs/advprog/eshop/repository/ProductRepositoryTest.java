@@ -65,4 +65,59 @@ class ProductRepositoryTest {
 
     }
 
+    @Test
+    void testEditProduct_Positive() {
+        Product product = new Product();
+        product.setProductId("1");
+        product.setProductName("Produk Lama");
+        product.setProductQuantity(10);
+
+        productRepository.create(product);
+
+        // edit
+        product.setProductName("Produk Baru");
+        product.setProductQuantity(20);
+        Product updated = productRepository.update(product);
+
+        assertEquals("Produk Baru", updated.getProductName());
+        assertEquals(20, updated.getProductQuantity());
+    }
+
+    @Test
+    void testEditProduct_Negative() {
+        Product product = new Product();
+        product.setProductId("999");
+        product.setProductName("Tidak Ada");
+        product.setProductQuantity(1);
+
+        Product result = productRepository.update(product);
+
+        assertNull(result);
+    }
+
+    @Test
+    void testDeleteProduct_Positive() {
+        Product product = new Product();
+        product.setProductId("1");
+        product.setProductName("Produk");
+        product.setProductQuantity(10);
+
+        productRepository.create(product);
+
+        productRepository.delete("1");
+
+        assertFalse(productRepository.findAll().hasNext());
+    }
+
+    @Test
+    void testDeleteProduct_Negative() {
+        productRepository.delete("999");
+
+        // tidak error & data tetap kosong
+        assertFalse(productRepository.findAll().hasNext());
+    }
+
+
+
+
 }
