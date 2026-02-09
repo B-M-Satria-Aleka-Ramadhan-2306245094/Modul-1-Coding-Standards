@@ -69,24 +69,24 @@ class ProductRepositoryTest {
     void testEditProduct_Positive() {
         Product product = new Product();
         product.setProductId("1");
-        product.setProductName("Produk Lama");
+        product.setProductName("sepatu");
         product.setProductQuantity(10);
 
         productRepository.create(product);
 
         // edit
-        product.setProductName("Produk Baru");
+        product.setProductName("baju");
         product.setProductQuantity(20);
         Product updated = productRepository.update(product);
 
-        assertEquals("Produk Baru", updated.getProductName());
+        assertEquals("baju", updated.getProductName());
         assertEquals(20, updated.getProductQuantity());
     }
 
     @Test
     void testEditProduct_Negative() {
         Product product = new Product();
-        product.setProductId("999");
+        product.setProductId("9");
         product.setProductName("Tidak Ada");
         product.setProductQuantity(1);
 
@@ -111,7 +111,7 @@ class ProductRepositoryTest {
 
     @Test
     void testDeleteProduct_Negative() {
-        productRepository.delete("999");
+        productRepository.delete("9");
 
         // tidak error & data tetap kosong
         assertFalse(productRepository.findAll().hasNext());
