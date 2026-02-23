@@ -41,8 +41,6 @@ dependencies {
     testImplementation("org.seleniumhq.selenium:selenium-java:$seleniumJavaVersion")
     testImplementation("io.github.bonigarcia:selenium-jupiter:$seleniumJupiterVersion")
     testImplementation("io.github.bonigarcia:webdrivermanager:$webdrivermanagerVersion")
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitJupiterVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitJupiterVersion")
 }
 
 tasks.register<Test>("unitTest") {
@@ -52,6 +50,8 @@ tasks.register<Test>("unitTest") {
     filter {
         excludeTestsMatching("*FunctionalTest")
     }
+
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.register<Test>("integrationTest") {
@@ -65,6 +65,7 @@ tasks.register<Test>("integrationTest") {
 
 tasks.withType<Test>().configureEach {
     useJUnitPlatform()
+    finalizedBy(tasks.jacocoTestReport)
 }
 
 tasks.test {
@@ -78,3 +79,4 @@ tasks.test {
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
 }
+
