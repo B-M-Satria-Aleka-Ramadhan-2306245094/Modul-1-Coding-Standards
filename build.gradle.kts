@@ -1,6 +1,7 @@
 plugins {
     java
     jacoco
+    pmd
     id("org.springframework.boot") version "3.5.10"
     id("io.spring.dependency-management") version "1.1.7"
 }
@@ -78,5 +79,19 @@ tasks.test {
 
 tasks.jacocoTestReport {
     dependsOn(tasks.test)
+}
+
+// PMD configuration: use PMD 7 release candidate which supports Java 21
+pmd {
+    toolVersion = "7.0.0-rc4"
+    isConsoleOutput = true
+}
+
+tasks.withType<org.gradle.api.plugins.quality.Pmd>().configureEach {
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+    }
+    isIgnoreFailures = false
 }
 
