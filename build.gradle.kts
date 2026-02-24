@@ -81,7 +81,6 @@ tasks.jacocoTestReport {
     dependsOn(tasks.test)
 }
 
-// PMD configuration: use PMD 7 release candidate which supports Java 21
 pmd {
     toolVersion = "7.0.0-rc4"
     isConsoleOutput = true
