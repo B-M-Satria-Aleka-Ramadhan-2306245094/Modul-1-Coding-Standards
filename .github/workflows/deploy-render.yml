@@ -1,0 +1,45 @@
+name: Deploy to Render (push)
+
+on:
+  push:
+    branches: [ main, master ]
+
+jobs:
+  deploy:
+    name: Build and trigger Render deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+
+      - name: Build (skip tests to speed deploy)
+        run: ./gradlew build -x test --no-daemon
+
+      - name: Trigger Render deploy (API)
+        env:
+          RENDER_SERVICE_ID: ${{ secrets.RENDER_SERVICE_ID }}
+          RENDER_API_KEY: ${{ secrets.RENDER_API_KEY }}
+        run: |
+          if [ -z "$RENDER_SERVICE_ID" ] || [ -z "$RENDER_API_KEY" ]; then
+            echo "Render secrets not set; skipping deploy"
+            exit 0
+          fi
+          echo "Triggering deploy for Render service $RENDER_SERVICE_ID"
+          resp=$(curl -s -w "\nHTTP_STATUS:%{http_code}\n" -X POST \
+            "https://api.render.com/v1/services/${RENDER_SERVICE_ID}/deploys" \
+            -H "Authorization: Bearer ${RENDER_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d '{}')
+          echo "$resp"
+          code=$(echo "$resp" | tr '\n' ' ' | sed -n 's/.*HTTP_STATUS:\([0-9][0-9][0-9]\).*/\1/p')
+          if [ "$code" != "201" ] && [ "$code" != "200" ]; then
+            echo "Render deploy trigger failed with status $code"
+            exit 1
+          fi
