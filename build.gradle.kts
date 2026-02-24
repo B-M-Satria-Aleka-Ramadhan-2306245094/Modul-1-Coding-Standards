@@ -91,6 +91,6 @@ tasks.withType<org.gradle.api.plugins.quality.Pmd>().configureEach {
         xml.required.set(true)
         html.required.set(true)
     }
-    isIgnoreFailures = false
+    ignoreFailures = false
 }
 
