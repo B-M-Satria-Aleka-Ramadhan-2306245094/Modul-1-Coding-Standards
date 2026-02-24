@@ -29,6 +29,25 @@ public class ProductControllerTest {
         public List<Product> findAll() {
             return new ArrayList<>(data);
         }
+
+        @Override
+        public Product findById(String id) {
+            return data.stream().filter(p -> p.getProductId().equals(id)).findFirst().orElse(null);
+        }
+
+        @Override
+        public void update(Product product) {
+            data.stream().filter(p -> p.getProductId().equals(product.getProductId()))
+                    .findFirst().ifPresent(p -> {
+                        p.setProductName(product.getProductName());
+                        p.setProductQuantity(product.getProductQuantity());
+                    });
+        }
+
+        @Override
+        public void delete(String id) {
+            data.removeIf(p -> p.getProductId().equals(id));
+        }
     }
 
     @Test
