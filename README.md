@@ -34,3 +34,57 @@ Ya, implementasi CI/CD ini telah memenuhi sebagian besar prinsip Continuous Inte
 
 **Indikasi Continuous Deployment:**
 Implementasi saat ini baru sebagian memenuhi prinsip Continuous Deployment. Workflow `deploy-render.yml` telah dibuat dan di-commit, namun belum fully automated karena memerlukan setup manual dari GitHub Secrets (`RENDER_SERVICE_ID` dan `RENDER_API_KEY`). Setelah secrets dikonfigurasi, workflow akan secara otomatis trigger deploy ke Render PaaS setiap kali ada push ke branch `main` atau `master`, yang berarti deployment benar-benar otomatis dan cepat tanpa intervensi manual di production environment.
+
+## REFLECTION 4
+## SOLID Principles 
+
+## 1. SRP (Single Responsibility Principle)
+
+**Implementasi:**
+- **CarController** (CarController.java): Hanya bertanggung jawab menangani HTTP request/response untuk fitur Car. Tidak mencampur dengan Product.
+- **CarServiceImpl**: Hanya mengoordinasi use case Car (create, read, update, delete). Tidak mengurus penyimpanan langsung.
+- **CarRepositoryImpl**: Hanya bertanggung jawab akses data Car (CRUD ke storage).
+- **Car** (model): Hanya menyimpan data mobil.
+
+Dulu CarController digabung dengan ProductController dan me-extend-nya, sehingga satu file punya dua tanggung jawab. Sekarang CarController dipisah ke file sendiri dan tidak me-extend ProductController, sehingga tiap class punya satu tanggung jawab.
+
+
+## 2. OCP (Open/Closed Principle)
+
+**Implementasi:**
+- **Interface CarRepository**: Service bergantung pada abstraksi. Perilaku baru (misalnya repository pakai database, cache, atau API eksternal) bisa ditambah dengan membuat class baru yang mengimplementasi CarRepository, tanpa mengubah CarServiceImpl atau controller.
+- **Interface CarService / CarReader / CarWriter**: Perilaku baru (validasi, logging, caching) bisa ditambah dengan decorator atau implementasi baru yang mengimplementasi interface yang sama, tanpa mengubah controller atau kode pemanggil.
+
+Dengan bergantung pada interface, kita bisa menambah implementasi baru (extend behavior) tanpa memodifikasi kode yang memakai interface tersebut.
+
+
+## 3. LSP (Liskov Substitution Principle)
+
+**Implementasi:**
+- **Sebelum:** arController me-extend ProductController. Secara semantik Car bukanlah “jenis Product” dalam arti substitusi: endpoint dan dependency berbeda. Mengganti ProductController dengan CarController akan mengubah perilaku (route /car/* vs /product/*), sehingga melanggar LSP.
+- **Sesudah:** CarController tidak lagi me-extend ProductController. Masing-masing controller berdiri sendiri. Tidak ada hubungan substitusi antara Product dan Car di layer controller, sehingga tidak ada pelanggaran LSP. Jika nanti ada abstract base (misalnya BaseCrudController) yang memang dirancang untuk di-substitute, subclass harus bisa dipakai menggantikan base tanpa mengubah kontrak (URL, dependency, return behavior).
+
+
+## 4. ISP (Interface Segregation Principle)
+
+**Implementasi:**
+- **CarReader**: Hanya findAll() dan findById(String carId). Client yang cuma butuh baca data (misalnya laporan, tampilan read-only) hanya bergantung pada CarReader.
+- **CarWriter**: Hanya create(Car car), update(String carId, Car car), deleteCarById(String carId). Client yang cuma butuh menulis/ubah data hanya bergantung pada CarWriter.
+- **CarService**: Extends CarReader dan CarWriter. Controller yang butuh full CRUD bergantung pada CarService saja.
+
+Dengan ini, client tidak dipaksa bergantung pada method yang tidak dipakai (misalnya client read-only tidak perlu tahu create/update/delete).
+
+
+## 5. DIP (Dependency Inversion Principle)
+
+**Implementasi:**
+- **CarController** bergantung pada **CarService** (interface), bukan CarServiceImpl. High-level (controller) tidak tahu detail implementasi service.
+- **CarServiceImpl** bergantung pada **CarRepository** (interface), bukan CarRepositoryImpl. Service tidak tahu detail storage (in-memory, DB, dll).
+- **CarRepositoryImpl** mengimplementasi **CarRepository** (abstraksi). Detail penyimpanan bergantung pada abstraksi.
+
+Alur dependensi: Controller → CarService (abstraksi) ← CarServiceImpl → CarRepository (abstraksi) ← CarRepositoryImpl. Tidak ada high-level module yang langsung bergantung pada concrete class low-level.
+
+
+
+
+
