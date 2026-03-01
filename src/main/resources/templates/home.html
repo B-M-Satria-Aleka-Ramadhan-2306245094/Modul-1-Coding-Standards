@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>E-Shop</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+<body>
+<div class="container my-4">
+    <h1>E-Shop</h1>
+    <div class="list-group mt-4">
+        <a th:href="@{/product/list}" class="list-group-item list-group-item-action">Product List</a>
+        <a th:href="@{/car/listCar}" class="list-group-item list-group-item-action">Car List</a>
+    </div>
+</div>
+</body>
+</html>
