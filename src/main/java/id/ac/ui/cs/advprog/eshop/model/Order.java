@@ -37,7 +37,7 @@ public class Order {
     }
 
     public final void setStatus(String status) {
-        if (!"WAITING_PAYMENT".equals(status) && !"SUCCESS".equals(status) && !"CANCELLED".equals(status)) {
+        if (!"WAITING_PAYMENT".equals(status) && !"SUCCESS".equals(status) && !"CANCELLED".equals(status) && !"FAILED".equals(status)) {
             throw new IllegalArgumentException("Invalid status");
         }
         this.status = status;

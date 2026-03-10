@@ -22,6 +22,7 @@ public class PaymentServiceImpl implements PaymentService {
     private static final String STATUS_WAITING_PAYMENT = "WAITING_PAYMENT";
     private static final String STATUS_FAILED = "FAILED";
 
+    
     private PaymentRepository paymentRepository;
     private OrderRepository orderRepository;
 
