@@ -8,16 +8,32 @@ import java.util.List;
 
 @Repository
 public class PaymentRepository {
+    private final List<Payment> paymentData = new ArrayList<>();
 
     public Payment save(Payment payment) {
+        int i = 0;
+        for (Payment p : paymentData) {
+            if (p.getId().equals(payment.getId())) {
+                paymentData.remove(i);
+                paymentData.add(i, payment);
+                return payment;
+            }
+            i += 1;
+        }
+        paymentData.add(payment);
         return payment;
     }
 
     public Payment findById(String id) {
+        for (Payment p : paymentData) {
+            if (p.getId().equals(id)) {
+                return p;
+            }
+        }
         return null;
     }
 
     public List<Payment> findAll() {
-        return new ArrayList<>();
+        return new ArrayList<>(paymentData);
     }
 }
